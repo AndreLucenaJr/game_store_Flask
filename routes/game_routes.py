@@ -55,6 +55,3 @@ def del_game(game_id):
     else:
          return jsonify({'message': 'Product not found'})
     
-
-from app import app
-app.register_blueprint(game_bp)
