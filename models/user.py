@@ -7,6 +7,7 @@ class User(db.Model):
     name = db.Column(db.String(100))
     money = db.Column(db.Float)
     email = db.Comlumn(db.String(100))
+    is_admin = db.Column(db.Boolean, default = False)
 
     def __init__(self, name):
         self.name = name

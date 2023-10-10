@@ -1,10 +1,12 @@
-from game_products.model import *
-from app import app
-from flask import jsonify,request
+from flask import jsonify,request, Blueprint
+from models.game import Game
+from app import db
+
+game_bp = Blueprint('game', __name__)
 
 
 #List all the Products
-@app.route('/games', methods=['GET'])
+@game_bp.route('/games', methods=['GET'])
 def list_games():
     games = Game.query.all()
     games_json = [{"id": g.id, "name": g.name, "price": g.price, "description" : g.description, "quantity" : g.quantity} for g in games]
@@ -12,7 +14,7 @@ def list_games():
 
 
 #Create a game in database
-@app.route('/games/add/', methods=['POST'])
+@game_bp.route('/games/add/', methods=['POST'])
 def add_game():
     if request.method == 'POST':
         data = request.json
@@ -31,7 +33,7 @@ def add_game():
 
 
 #List a game by ID
-@app.route('/games/<int:game_id>/', methods=['GET'])
+@game_bp.route('/games/<int:game_id>/', methods=['GET'])
 def get_game(game_id):
     game = Game.query.get(game_id)
     if game:
@@ -43,7 +45,7 @@ def get_game(game_id):
 
 
 #Delete a product by ID
-@app.route('/games/delete/<int:game_id>/', methods=['DELETE'])
+@game_bp.route('/games/delete/<int:game_id>/', methods=['DELETE'])
 def del_game(game_id):
     game = Game.query.get(game_id)
     if game:
@@ -52,3 +54,7 @@ def del_game(game_id):
         return jsonify({'message': 'Product deleted'})
     else:
          return jsonify({'message': 'Product not found'})
+    
+
+from app import app
+app.register_blueprint(game_bp)
