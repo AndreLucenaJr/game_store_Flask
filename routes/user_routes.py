@@ -1,24 +1,26 @@
 from flask import jsonify,request, Blueprint
 from models.user import User
-from flask_bcrypt import bcrypt
+from flask_bcrypt import Bcrypt
 from database import db
 
+bcrypt = Bcrypt()
 user_bp = Blueprint('user', __name__)
 
 # Register a user
-@user_bp.route('/register', methods=['POST'])
+@user_bp.route('/user/register', methods=['POST'])
 def register_user():
     if request.method == 'POST':
         data = request.json
         username = data.get('username')
         password = data.get('password')
         email = data.get('email')
+        money = data.get('money')
         is_admin = data.get('is_admin', 0)
 
     if username and password and email:
 
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(username=username, password=hashed_password, email=email, is_admin=is_admin)
+        new_user = User(username=username, password=hashed_password, email=email, money=money, is_admin=is_admin)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registration successful'})
@@ -27,8 +29,9 @@ def register_user():
 
 
 
+
 # Login a user
-@user_bp.route('/login', methods=['POST'])
+@user_bp.route('/user/login', methods=['POST'])
 def login_user():
     if request.method == 'POST':
         data = request.json
@@ -42,9 +45,34 @@ def login_user():
             login_user()
             return jsonify({'message': 'Login well done'})
         else:
-            return jsonify({'message': 'Nome de usuário ou senha inválidos'})
+            return jsonify({'message': 'Invalids username or password'})
     else:
-        return jsonify({'message': 'Campos obrigatórios não preenchidos'})
+        return jsonify({'message': 'Mandatory fields not filled in'})
     
 
 
+
+#Get the user by ID
+@user_bp.route('/user/<int:user_id>/', methods=['GET'])
+def find_user_by_id(user_id):
+    user = User.query.get(user_id)
+    if user:
+        user_json =  {"id": user.id, "name": user.username, "email": user.email, "money": user.money}
+        return jsonify(user_json)
+    else:
+        return jsonify({'message': 'User not found'})
+
+
+
+
+#delete a user
+@user_bp.route('/user/delete/<int:user_id>/', methods=['DELETE'])
+def delete_user(user_id):
+    user = User.query.get(user_id)
+
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': 'User deleted'})
+    else:
+        return jsonify({'message': 'User not found'})
