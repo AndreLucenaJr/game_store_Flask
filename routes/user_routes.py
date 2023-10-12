@@ -65,6 +65,31 @@ def find_user_by_id(user_id):
 
 
 
+#Update the user
+@user_bp.route('/user/update/<int":user_id>/', methods=['PUT'])
+def user_update(user_id):
+    user = User.query.get(user_id)
+    if user:
+        username = request.json.get('username', user.username)
+        password = request.json.get('password', user.password)
+        email = request.json.get('email', user.email)
+        money = request.json.get('money', user.money)
+        is_admin = request.json.get('is_admin', user.id_admin)
+
+        user.username = username
+        user.password = password
+        user.email = email
+        user.money = money
+        user.is_admin = is_admin
+        
+        db.session.commit()
+        return jsonify({'message': 'User updated'})
+    else:
+        return jsonify({'message': 'User not found'})
+
+
+
+
 #delete a user
 @user_bp.route('/user/delete/<int:user_id>/', methods=['DELETE'])
 def delete_user(user_id):
