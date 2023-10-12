@@ -1,4 +1,4 @@
-from app import db
+from database import db
 
 class User(db.Model):
 
@@ -6,7 +6,7 @@ class User(db.Model):
     id = db.Column("user_id", db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100))
     money = db.Column(db.Float)
-    email = db.Comlumn(db.String(100))
+    email = db.Column(db.String(100))
     is_admin = db.Column(db.Boolean, default = False)
 
     def __init__(self, name):

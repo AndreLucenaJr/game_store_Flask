@@ -1,6 +1,6 @@
 from flask import jsonify,request, Blueprint
 from models.game import Game
-from app import db
+from database import db
 
 game_bp = Blueprint('game', __name__)
 
