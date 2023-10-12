@@ -9,7 +9,7 @@ game_bp = Blueprint('game', __name__)
 @game_bp.route('/games', methods=['GET'])
 def list_games():
     games = Game.query.all()
-    games_json = [{"id": g.id, "name": g.name, "price": g.price, "description" : g.description, "quantity" : g.quantity} for g in games]
+    games_json = [{"id": g.id, "name": g.name, "developer": g.developer, "price": g.price, "description" : g.description, "quantity" : g.quantity} for g in games]
     return jsonify(games_json)
 
 
@@ -19,12 +19,13 @@ def add_game():
     if request.method == 'POST':
         data = request.json
         name = data.get('name')
+        developer = data.get('developer')
         price = data.get('price')
         description = data.get('description')
-
+        quantity = data.get('quantity')
     
     if name and price and description:
-        new_game = Game(name=name, price=price, description=description)
+        new_game = Game(name=name, developer=developer, price=price, description=description, quantity=quantity)
         db.session.add(new_game)
         db.session.commit()
         return jsonify({'message': 'Successfully created game'})
@@ -37,7 +38,7 @@ def add_game():
 def get_game(game_id):
     game = Game.query.get(game_id)
     if game:
-        game_json = {"id": game.id, "name": game.name, "price": game.price, "description" : game.description}
+        game_json = {"id": game.id, "name": game.name, "developer": game.developer, "price": game.price, "description" : game.description, "quantity": game.quantity}
         return jsonify(game_json)
     else:
         return jsonify({'message': 'Product not found'})
